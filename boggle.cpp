@@ -94,6 +94,33 @@ std::set<std::string> boggle(const std::set<std::string>& dict, const std::set<s
 bool boggleHelper(const std::set<std::string>& dict, const std::set<std::string>& prefix, const std::vector<std::vector<char> >& board, 
 								   std::string word, std::set<std::string>& result, unsigned int r, unsigned int c, int dr, int dc)
 {
-//add your solution here!
-
+//add your solution here!	
+	word = word + board[r][c]; // add the character to the word
+	if( // check if the direction has finally hit the end of the board
+		(dr == 1 && dc == 1 && (r==board.size()-1 || c==board[0].size()-1) ) ||
+		(dr == 1 && dc == 0 && (r==board.size()-1) ) ||
+		(dr == 0 && dc == 1 && (c==board[0].size()-1))
+		){
+		if(!(dict.find(word)==dict.end())) { // if at the end of the board and the word is found return it
+			result.insert(word);
+			return true;
+		}
+		return false; // if the word is not found by the time you reach the end of the board then return false
+	}
+	if(!(dict.find(word)==dict.end())){ // check if the current formation of the word is in the dictionary
+		if(!(prefix.find(word)==prefix.end())) { // if it is then check if it is a prefix or not
+			std::string newWord=word; //if it is a prefix then continue iterating through
+			if(boggleHelper(dict,prefix,board, newWord, result, r+dr, c+dc, dr, dc)) {
+				return true; // return true if a longer word was found
+			}
+			else { // if a longer word is not found then the prefix is added to result
+				result.insert(word);
+				return true; 
+			}
+		}
+		result.insert(word); // if the word is not a prefix and it is found then it is just added to the result
+		return true;
+	}
+	return boggleHelper(dict,prefix,board, word, result, r+dr, c+dc, dr, dc);
+	// if the word i not found continue to the next character in the board
 }
